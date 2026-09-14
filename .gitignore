@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.env
+*.pyc
+.DS_Store
+tarefas.json
+perfil.json
+.pytest_cache/
+evals/audit_*.json
+
+# Experimentos pessoais fora do escopo da Sprint 03
+bot.py
+chat.py
+calendario.py
+calendário.py

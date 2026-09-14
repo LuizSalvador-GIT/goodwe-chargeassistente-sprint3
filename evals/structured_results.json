@@ -1,0 +1,94 @@
+{
+  "model": "qwen3:4b-instruct",
+  "summary": {
+    "cases": 3,
+    "accuracy": 1.0,
+    "mean_latency_ms": 14543.72
+  },
+  "results": [
+    {
+      "input": "O carregador ev-17 está carregando a 7,4 kW e consumiu 12,5 kWh. Valor R$ 18,90.",
+      "expected": {
+        "carregador_id": "EV-17",
+        "estado": "carregando",
+        "potencia_kw": 7.4,
+        "energia_kwh": 12.5,
+        "valor_brl": 18.9
+      },
+      "output": {
+        "carregador_id": "EV-17",
+        "estado": "carregando",
+        "potencia_kw": 7.4,
+        "energia_kwh": 12.5,
+        "valor_brl": 18.9,
+        "mensagem": "O carregador ev-17 está carregando a 7,4 kW e consumiu 12,5 kWh. Valor R$ 18,90."
+      },
+      "checks": {
+        "carregador_id": true,
+        "estado": true,
+        "potencia_kw": true,
+        "energia_kwh": true,
+        "valor_brl": true
+      },
+      "passed": true,
+      "error": null,
+      "latency_ms": 22699.81
+    },
+    {
+      "input": "O ponto gw-02 está indisponível. Ainda não temos potência, energia nem valor.",
+      "expected": {
+        "carregador_id": "GW-02",
+        "estado": "indisponivel",
+        "potencia_kw": null,
+        "energia_kwh": null,
+        "valor_brl": null
+      },
+      "output": {
+        "carregador_id": "GW-02",
+        "estado": "indisponivel",
+        "potencia_kw": null,
+        "energia_kwh": null,
+        "valor_brl": null,
+        "mensagem": "O ponto gw-02 está indisponível. Ainda não temos potência, energia nem valor."
+      },
+      "checks": {
+        "carregador_id": true,
+        "estado": true,
+        "potencia_kw": true,
+        "energia_kwh": true,
+        "valor_brl": true
+      },
+      "passed": true,
+      "error": null,
+      "latency_ms": 11071.22
+    },
+    {
+      "input": "Carregador A-9 disponível, potência de 22 kW.",
+      "expected": {
+        "carregador_id": "A-9",
+        "estado": "disponivel",
+        "potencia_kw": 22.0,
+        "energia_kwh": null,
+        "valor_brl": null
+      },
+      "output": {
+        "carregador_id": "A-9",
+        "estado": "disponivel",
+        "potencia_kw": 22.0,
+        "energia_kwh": null,
+        "valor_brl": null,
+        "mensagem": "Carregador A-9 disponível, potência de 22 kW."
+      },
+      "checks": {
+        "carregador_id": true,
+        "estado": true,
+        "potencia_kw": true,
+        "energia_kwh": true,
+        "valor_brl": true
+      },
+      "passed": true,
+      "error": null,
+      "latency_ms": 9860.14
+    }
+  ]
+}
