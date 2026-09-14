@@ -30,6 +30,21 @@ Para preservar a interface Streamlit do projeto anterior:
 streamlit run streamlit_app.py
 ```
 
+## Publicar no Streamlit Community Cloud
+
+1. Envie este projeto para um repositório GitHub público.
+2. Em `share.streamlit.io`, crie um app usando `streamlit_app.py`.
+3. Em **Advanced settings > Secrets**, cadastre:
+
+```toml
+LLM_PROVIDER = "nvidia"
+NVIDIA_API_KEY = "sua-chave-nvapi"
+NVIDIA_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b"
+```
+
+Nunca salve o valor real da chave no GitHub. Localmente, mantenha
+`LLM_PROVIDER=ollama` no `.env` para usar o Qwen instalado.
+
 ## Structured output
 
 O schema `ConsultaRecarga` está em `src/schemas/consulta_recarga.py`; a chain correspondente

@@ -4,6 +4,7 @@ from langchain_core.output_parsers import PydanticOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 
 from src.config import settings
 from src.schemas import ConsultaRecarga
@@ -18,7 +19,21 @@ def _load_prompt(version: str = "v2") -> str:
     return (ROOT / "prompts" / f"system_prompt_{version}.md").read_text(encoding="utf-8")
 
 
-def build_llm(model: str | None = None) -> ChatOllama:
+def build_llm(model: str | None = None):
+    if settings.llm_provider == "nvidia":
+        if not settings.nvidia_api_key:
+            raise RuntimeError("NVIDIA_API_KEY não foi configurada nos Secrets do aplicativo.")
+        return ChatOpenAI(
+            model=model or settings.nvidia_model,
+            api_key=settings.nvidia_api_key,
+            base_url=settings.nvidia_base_url,
+            temperature=settings.temperature,
+            top_p=settings.top_p,
+            max_tokens=settings.max_tokens,
+            timeout=60,
+            max_retries=0,
+            extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+        )
     return ChatOllama(
         model=model or settings.ollama_model,
         base_url=settings.ollama_base_url,
@@ -31,7 +46,7 @@ def build_llm(model: str | None = None) -> ChatOllama:
 
 
 def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
-    selected_model = model or settings.ollama_model
+    selected_model = model or (settings.nvidia_model if settings.llm_provider == "nvidia" else settings.ollama_model)
     llm = build_llm(selected_model)
     system_prompt = _load_prompt(prompt_version)
     human_template = "{input}"
@@ -53,7 +68,7 @@ def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
 
 
 def build_structured_chain(model: str | None = None):
-    selected_model = model or settings.ollama_model
+    selected_model = model or (settings.nvidia_model if settings.llm_provider == "nvidia" else settings.ollama_model)
     parser = PydanticOutputParser(pydantic_object=ConsultaRecarga)
     system_prompt = _load_prompt("v3")
     no_think = "\n\n/no_think" if selected_model.lower().startswith("qwen3") else ""

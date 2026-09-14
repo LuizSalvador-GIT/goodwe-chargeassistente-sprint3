@@ -1,6 +1,15 @@
+import os
 import uuid
 
 import streamlit as st
+
+# No Streamlit Community Cloud, os Secrets são aplicados antes de importar a chain.
+try:
+    for key in ("LLM_PROVIDER", "NVIDIA_API_KEY", "NVIDIA_MODEL"):
+        if key in st.secrets:
+            os.environ[key] = str(st.secrets[key])
+except FileNotFoundError:
+    pass
 
 from src.chain import build_chatbot
 from src.guardrails import moderate_input
@@ -35,8 +44,8 @@ if question := st.chat_input("Digite sua dúvida sobre os carregadores…"):
                 {"input": question},
                 config={"configurable": {"session_id": st.session_state.session_id}},
             )
-        except Exception as exc:
-            answer = f"Não consegui consultar o modelo local. Verifique o Ollama. Detalhe: {exc}"
+        except Exception:
+            answer = "Não consegui consultar o modelo agora. Aguarde alguns instantes e tente novamente."
     else:
         answer = decision.response
 
