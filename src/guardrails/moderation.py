@@ -16,6 +16,8 @@ HIGH_RISK_TERMS = {
     "choque", "incêndio", "incendio", "fio desencapado", "curto-circuito",
     "alta tensão", "alta tensao", "disjuntor", "rede elétrica", "rede eletrica",
     "esquentando", "superaquecimento", "fumaça", "fumaca", "faísca", "faisca",
+    "energizado", "energizada", "trocar cabo", "reparo elétrico", "reparo eletrico",
+    "abrir o carregador", "desmontar o carregador",
 }
 
 LEGAL_FINANCIAL_TERMS = {
