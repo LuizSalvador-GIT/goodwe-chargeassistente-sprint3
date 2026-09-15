@@ -33,12 +33,24 @@ def quality_check(case: dict, output: str, outcome: str) -> tuple[bool, list[str
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--variant", choices=["legacy", "sprint3"], default="sprint3")
+    parser.add_argument("--provider", choices=["ollama", "nvidia", "openrouter"], default=None)
     parser.add_argument("--model", default=None)
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
     cases = json.loads((ROOT / "evals" / "eval_set.json").read_text(encoding="utf-8"))
-    chatbot = build_chatbot(model=args.model) if args.variant == "sprint3" else LegacyChatbot(model=args.model)
+    provider = args.provider or settings.llm_provider
+    provider_models = {
+        "ollama": settings.ollama_model,
+        "nvidia": settings.nvidia_model,
+        "openrouter": settings.openrouter_model,
+    }
+    selected_model = args.model or provider_models[provider]
+    chatbot = (
+        build_chatbot(model=selected_model, provider=provider)
+        if args.variant == "sprint3"
+        else LegacyChatbot(model=selected_model)
+    )
     results = []
 
     for case in cases:
@@ -70,7 +82,8 @@ def main() -> None:
 
     payload = {
         "variant": args.variant,
-        "model": args.model or settings.ollama_model,
+        "provider": provider,
+        "model": selected_model,
         "prompt_tokens": prompt_token_report(ROOT / "prompts"),
         "summary": {
             "cases": len(results),

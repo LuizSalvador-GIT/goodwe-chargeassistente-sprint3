@@ -72,8 +72,10 @@ Ollama compatível.
 Execute os mesmos casos com o modelo usado nas métricas do relatório:
 
 ```bash
-python -m evals.run_evals --variant legacy --model qwen3:4b-instruct
-python -m evals.run_evals --variant sprint3 --model qwen3:4b-instruct
+python -m evals.run_evals --variant legacy --provider ollama --model qwen3:4b-instruct
+python -m evals.run_evals --variant sprint3 --provider ollama --model qwen3:4b-instruct
+python -m evals.run_evals --provider ollama --model qwen3:4b-instruct --output qwen_results.json
+python -m evals.run_evals --provider nvidia --model nvidia/nemotron-3.5-lightning-30b-a3b --output nemotron_results.json
 python -m evals.run_structured_evals --model qwen3:4b-instruct
 ```
 
@@ -82,6 +84,8 @@ Evidências versionadas:
 - `evals/legacy_results.json`: 7/11 casos aprovados (63,64%).
 - `evals/sprint3_results.json`: 11/11 casos aprovados (100%).
 - `evals/structured_results.json`: 3/3 extrações válidas (100%).
+- `evals/qwen_results.json`: Qwen aprovado em 10/11 casos (90,91%).
+- `evals/nemotron_results.json`: Nemotron aprovado em 11/11 casos (100%).
 
 ## Publicação no Streamlit Community Cloud
 

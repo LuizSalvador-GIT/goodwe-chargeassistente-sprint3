@@ -24,7 +24,20 @@ As duas versões foram executadas no mesmo Mac, com `qwen3:4b-instruct`, tempera
 
 O ganho principal foi de 36,36 pontos percentuais na qualidade e 12,69% de redução na latência. O aumento dos tokens de saída decorre de respostas mais completas e orientações seguras. O prompt v3 tem 695 tokens, contra 1.842 na v2.
 
-## 4. Problemas encontrados e soluções
+## 4. Comparação entre modelos
+
+Em 15/09/2026, o mesmo fluxo LCEL, prompt v3, conjunto de 11 casos, temperature 0,2, top_p 0,9 e limite de 512 tokens foram executados com Qwen local e Nemotron pela API NVIDIA.
+
+| Métrica | Qwen 3 4B | Nemotron 3.5 Lightning 30B A3B |
+|---|---:|---:|
+| Qualidade no eval | 90,91% (10/11) | 100% (11/11) |
+| Tokens médios de entrada | 13,27 | 13,27 |
+| Tokens médios de saída | 161,55 | 136,45 |
+| Latência média | 21,17 s | 12,31 s |
+
+O Nemotron ganhou 9,09 pontos percentuais de qualidade, reduziu a latência média em 41,88% e gerou 15,54% menos tokens de saída. O único erro do Qwen ocorreu em `support_01`, ao recomendar lavar um conector, conteúdo proibido pelos critérios de segurança do eval.
+
+## 5. Problemas encontrados e soluções
 
 1. O modelo obrigatório `gpt-oss:120b` ocupa cerca de 65 GB e não cabe na máquina de desenvolvimento. A chain usa esse nome como padrão e aceita `OLLAMA_MODEL`/`OLLAMA_BASE_URL`; os testes reproduzíveis foram realizados com Qwen local e o teste final de 120B deve usar Ollama remoto.
 2. O primeiro eval marcava toda resposta liberada como correta, mesmo quando inventava um aplicativo ou recomendava lavar conectores. Foram adicionados critérios de conteúdo por caso e proibições explícitas no prompt.

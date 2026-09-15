@@ -19,8 +19,9 @@ def _load_prompt(version: str = "v2") -> str:
     return (ROOT / "prompts" / f"system_prompt_{version}.md").read_text(encoding="utf-8")
 
 
-def build_llm(model: str | None = None):
-    if settings.llm_provider == "openrouter":
+def build_llm(model: str | None = None, provider: str | None = None):
+    selected_provider = (provider or settings.llm_provider).lower()
+    if selected_provider == "openrouter":
         if not settings.openrouter_api_key:
             raise RuntimeError("OPENROUTER_API_KEY não foi configurada nos Secrets do aplicativo.")
         selected_openrouter_model = model or settings.openrouter_model
@@ -29,6 +30,7 @@ def build_llm(model: str | None = None):
             selected_openrouter_model = "nvidia/nemotron-3.5-lightning:free"
         return ChatOpenAI(
             model=selected_openrouter_model,
+            tiktoken_model_name="gpt-3.5-turbo",
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
             temperature=settings.temperature,
@@ -38,11 +40,12 @@ def build_llm(model: str | None = None):
             max_retries=1,
             default_headers={"X-OpenRouter-Title": "ChargeAssistente GoodWe"},
         )
-    if settings.llm_provider == "nvidia":
+    if selected_provider == "nvidia":
         if not settings.nvidia_api_key:
             raise RuntimeError("NVIDIA_API_KEY não foi configurada nos Secrets do aplicativo.")
         return ChatOpenAI(
             model=model or settings.nvidia_model,
+            tiktoken_model_name="gpt-3.5-turbo",
             api_key=settings.nvidia_api_key,
             base_url=settings.nvidia_base_url,
             temperature=settings.temperature,
@@ -63,10 +66,15 @@ def build_llm(model: str | None = None):
     )
 
 
-def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
+def build_chatbot(
+    model: str | None = None,
+    prompt_version: str = "v3",
+    provider: str | None = None,
+):
+    selected_provider = (provider or settings.llm_provider).lower()
     provider_models = {"nvidia": settings.nvidia_model, "openrouter": settings.openrouter_model}
-    selected_model = model or provider_models.get(settings.llm_provider, settings.ollama_model)
-    llm = build_llm(selected_model)
+    selected_model = model or provider_models.get(selected_provider, settings.ollama_model)
+    llm = build_llm(selected_model, provider=selected_provider)
     system_prompt = _load_prompt(prompt_version)
     human_template = "{input}"
     if selected_model.lower().startswith("qwen3"):
@@ -86,9 +94,10 @@ def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
     )
 
 
-def build_structured_chain(model: str | None = None):
+def build_structured_chain(model: str | None = None, provider: str | None = None):
+    selected_provider = (provider or settings.llm_provider).lower()
     provider_models = {"nvidia": settings.nvidia_model, "openrouter": settings.openrouter_model}
-    selected_model = model or provider_models.get(settings.llm_provider, settings.ollama_model)
+    selected_model = model or provider_models.get(selected_provider, settings.ollama_model)
     parser = PydanticOutputParser(pydantic_object=ConsultaRecarga)
     system_prompt = _load_prompt("v3")
     no_think = "\n\n/no_think" if selected_model.lower().startswith("qwen3") else ""
@@ -96,4 +105,4 @@ def build_structured_chain(model: str | None = None):
         ("system", system_prompt),
         ("human", "Extraia os dados da consulta abaixo. Use desconhecido ou null quando o dado não existir.\n\n{format_instructions}\n\nConsulta: {input}{no_think}"),
     ]).partial(format_instructions=parser.get_format_instructions(), no_think=no_think)
-    return prompt | build_llm(selected_model) | parser
+    return prompt | build_llm(selected_model, provider=selected_provider) | parser
