@@ -5,7 +5,7 @@ import streamlit as st
 
 # No Streamlit Community Cloud, os Secrets são aplicados antes de importar a chain.
 try:
-    for key in ("LLM_PROVIDER", "NVIDIA_API_KEY", "NVIDIA_MODEL"):
+    for key in ("LLM_PROVIDER", "NVIDIA_API_KEY", "NVIDIA_MODEL", "OPENROUTER_API_KEY", "OPENROUTER_MODEL"):
         if key in st.secrets:
             os.environ[key] = str(st.secrets[key])
 except FileNotFoundError:

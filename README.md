@@ -45,6 +45,14 @@ NVIDIA_MODEL = "nvidia/nemotron-3.5-lightning-30b-a3b"
 Nunca salve o valor real da chave no GitHub. Localmente, mantenha
 `LLM_PROVIDER=ollama` no `.env` para usar o Qwen instalado.
 
+Se o endpoint NVIDIA estiver indisponível, use o roteador gratuito do OpenRouter:
+
+```toml
+LLM_PROVIDER = "openrouter"
+OPENROUTER_API_KEY = "sua-chave-openrouter"
+OPENROUTER_MODEL = "openrouter/free"
+```
+
 ## Structured output
 
 O schema `ConsultaRecarga` está em `src/schemas/consulta_recarga.py`; a chain correspondente

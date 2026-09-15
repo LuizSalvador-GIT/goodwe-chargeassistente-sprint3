@@ -20,6 +20,20 @@ def _load_prompt(version: str = "v2") -> str:
 
 
 def build_llm(model: str | None = None):
+    if settings.llm_provider == "openrouter":
+        if not settings.openrouter_api_key:
+            raise RuntimeError("OPENROUTER_API_KEY não foi configurada nos Secrets do aplicativo.")
+        return ChatOpenAI(
+            model=model or settings.openrouter_model,
+            api_key=settings.openrouter_api_key,
+            base_url=settings.openrouter_base_url,
+            temperature=settings.temperature,
+            top_p=settings.top_p,
+            max_tokens=settings.max_tokens,
+            timeout=60,
+            max_retries=1,
+            default_headers={"X-OpenRouter-Title": "ChargeAssistente GoodWe"},
+        )
     if settings.llm_provider == "nvidia":
         if not settings.nvidia_api_key:
             raise RuntimeError("NVIDIA_API_KEY não foi configurada nos Secrets do aplicativo.")
@@ -46,7 +60,8 @@ def build_llm(model: str | None = None):
 
 
 def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
-    selected_model = model or (settings.nvidia_model if settings.llm_provider == "nvidia" else settings.ollama_model)
+    provider_models = {"nvidia": settings.nvidia_model, "openrouter": settings.openrouter_model}
+    selected_model = model or provider_models.get(settings.llm_provider, settings.ollama_model)
     llm = build_llm(selected_model)
     system_prompt = _load_prompt(prompt_version)
     human_template = "{input}"
@@ -68,7 +83,8 @@ def build_chatbot(model: str | None = None, prompt_version: str = "v3"):
 
 
 def build_structured_chain(model: str | None = None):
-    selected_model = model or (settings.nvidia_model if settings.llm_provider == "nvidia" else settings.ollama_model)
+    provider_models = {"nvidia": settings.nvidia_model, "openrouter": settings.openrouter_model}
+    selected_model = model or provider_models.get(settings.llm_provider, settings.ollama_model)
     parser = PydanticOutputParser(pydantic_object=ConsultaRecarga)
     system_prompt = _load_prompt("v3")
     no_think = "\n\n/no_think" if selected_model.lower().startswith("qwen3") else ""
