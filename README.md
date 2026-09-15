@@ -50,7 +50,7 @@ Se o endpoint NVIDIA estiver indisponível, use o roteador gratuito do OpenRoute
 ```toml
 LLM_PROVIDER = "openrouter"
 OPENROUTER_API_KEY = "sua-chave-openrouter"
-OPENROUTER_MODEL = "openrouter/free"
+OPENROUTER_MODEL = "nvidia/nemotron-3.5-lightning:free"
 ```
 
 ## Structured output

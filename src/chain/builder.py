@@ -23,8 +23,12 @@ def build_llm(model: str | None = None):
     if settings.llm_provider == "openrouter":
         if not settings.openrouter_api_key:
             raise RuntimeError("OPENROUTER_API_KEY não foi configurada nos Secrets do aplicativo.")
+        selected_openrouter_model = model or settings.openrouter_model
+        # Evita classificadores escolhidos aleatoriamente pelo roteador gratuito.
+        if selected_openrouter_model == "openrouter/free":
+            selected_openrouter_model = "nvidia/nemotron-3.5-lightning:free"
         return ChatOpenAI(
-            model=model or settings.openrouter_model,
+            model=selected_openrouter_model,
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
             temperature=settings.temperature,
