@@ -29,13 +29,3 @@ O ganho principal foi de 36,36 pontos percentuais na qualidade e 12,69% de redu�
 1. O modelo obrigatório `gpt-oss:120b` ocupa cerca de 65 GB e não cabe na máquina de desenvolvimento. A chain usa esse nome como padrão e aceita `OLLAMA_MODEL`/`OLLAMA_BASE_URL`; os testes reproduzíveis foram realizados com Qwen local e o teste final de 120B deve usar Ollama remoto.
 2. O primeiro eval marcava toda resposta liberada como correta, mesmo quando inventava um aplicativo ou recomendava lavar conectores. Foram adicionados critérios de conteúdo por caso e proibições explícitas no prompt.
 3. A execução direta do arquivo causava `ModuleNotFoundError`. O projeto passou a documentar a execução como módulo: `python -m evals.run_evals`.
-
-## 5. Equipe e divisão de trabalho
-
-- Victor Manzini - RM 572123 - revisão funcional e demonstração.
-- Guilherme de Oliveira Santos - RM 572195 - revisão do eval e evidências.
-- Caio Marinho Pereira - RM 572873 - revisão de prompts e guardrails.
-- Ricardo Tunes - RM 555919 - revisão do relatório e apresentação.
-- Luiz Cesar Conti Salvador - RM 571305 - refatoração LangChain e integração.
-
-As atribuições devem ser confirmadas pelo grupo e refletidas em commits próprios antes do envio.
